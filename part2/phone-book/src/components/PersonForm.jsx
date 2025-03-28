@@ -1,3 +1,5 @@
+import contact from "../services/contact";
+
 const PersonForm = ({
   persons,
   setPersons,
@@ -8,13 +10,51 @@ const PersonForm = ({
 }) => {
   const handleSubmitAddName = (event) => {
     event.preventDefault();
-    persons.find((person) => person.name === newName)
-      ? alert(`${newName} is already added to phonebook`)
-      : setPersons([
-          ...persons,
-          { name: newName, number: newPhone, id: persons.length + 1 },
-        ]);
-    setNewName("");
+    if (persons.find((person) => person.name === newName)) {
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        contact
+          .update(persons.find((person) => person.name === newName).id, {
+            name: newName,
+            number: newPhone,
+          })
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.name === response.name
+                  ? { ...person, number: newPhone }
+                  : person
+              )
+            );
+            setNewName("");
+            setNewPhone("");
+          })
+          .catch((error) => {
+            alert("Error updating contact:", error);
+          });
+      }
+    } else {
+      contact
+        .create({
+          name: newName,
+          number: newPhone,
+        })
+        .then((response) => {
+          setPersons(persons.concat(response));
+          setPersons([
+            ...persons,
+            { name: newName, number: newPhone, id: response.id },
+          ]);
+          setNewName("");
+          setNewPhone("");
+        })
+        .catch((error) => {
+          alert("Error adding contact:", error);
+        });
+    }
   };
 
   const handleNameChange = (event) => {

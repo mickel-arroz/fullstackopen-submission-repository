@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from "axios";
+import contact from "../src/services/contact";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,13 +11,15 @@ const App = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3002/persons").then((response) => {
-      console.log("Entro al Effect");
-      setPersons(response.data);
-    });
+    contact
+      .getAll()
+      .then((initialData) => {
+        setPersons(initialData);
+      })
+      .catch((error) => {
+        alert("Error fetching data:", error);
+      });
   }, []);
-
-  console.log("render", persons.length, "persons");
 
   let findSearch =
     search != ""
@@ -43,7 +45,11 @@ const App = () => {
         setNewPhone={setNewPhone}
       ></PersonForm>
       <h2>Numbers</h2>
-      <Persons findSearch={findSearch}></Persons>
+      <Persons
+        findSearch={findSearch}
+        persons={persons}
+        setPersons={setPersons}
+      ></Persons>
     </div>
   );
 };
