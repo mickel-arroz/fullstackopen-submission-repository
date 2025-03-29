@@ -7,6 +7,7 @@ const PersonForm = ({
   setNewName,
   newPhone,
   setNewPhone,
+  setMessage,
 }) => {
   const handleSubmitAddName = (event) => {
     event.preventDefault();
@@ -31,6 +32,12 @@ const PersonForm = ({
             );
             setNewName("");
             setNewPhone("");
+
+            setMessage(`Updated ${response.name}'s number to ${newPhone}`);
+
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
           })
           .catch((error) => {
             alert("Error updating contact:", error);
@@ -48,8 +55,15 @@ const PersonForm = ({
             ...persons,
             { name: newName, number: newPhone, id: response.id },
           ]);
+
           setNewName("");
           setNewPhone("");
+
+          setMessage(`Added ${response.name}`);
+
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
         })
         .catch((error) => {
           alert("Error adding contact:", error);

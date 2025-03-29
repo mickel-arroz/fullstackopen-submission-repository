@@ -1,6 +1,6 @@
 import contact from "../services/contact";
 
-const Persons = ({ findSearch, persons, setPersons }) => {
+const Persons = ({ findSearch, persons, setPersons, setError }) => {
   const handleDeleteButton = (id) => {
     if (window.confirm("Are you sure you want to delete this contact?")) {
       contact
@@ -9,8 +9,12 @@ const Persons = ({ findSearch, persons, setPersons }) => {
           setPersons(persons.filter((person) => person.id !== id));
           alert("Contact deleted successfully");
         })
-        .catch((error) => {
-          alert("Error deleting contact:", error);
+        .catch(() => {
+          setError(
+            `Information of ${
+              persons.find((person) => person.id === id).name
+            } has already been removed from server`
+          );
         });
     }
   };
